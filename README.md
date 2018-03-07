@@ -11,7 +11,7 @@ Please note that the OVMF that is build is OvmfPkg/OvmfPkgIa32X64.dsc .  For oth
 The following is the most basic way to run.  Assuming the host system is 64 bit and the targets desired are ia32 and x64.
 
 0) Ensure you have public and private keys for ssh set up for your user; this example expects the files for the identity to be id_rsa.pub and id_rsa. https://www.howtoforge.com/linux-basics-how-to-install-ssh-keys-on-the-shell
-1) Build or pull this image.  If building: docker build -t=geneerik/tianocore-sshd $(pwd)
+1) Build or pull this image.  If building: docker build -t=geneerik/docker-edk2-uefi $(pwd)
 2) Create the container; the "-e MAX_CONCURRENT_THREAD_NUMBER=..." part can be omitted if this information cannot be retrieved for some reason or the host system is not unix-like or in an external docker host (like aws, VirtualBox, or on exeternal kubernetes): docker run -d -p 2222:22 -v /home/$(whoami)/.ssh/id_rsa.pub:/home/$(whoami)/.ssh/authorized_keys -e SSH_USERS="$(whoami):$(id -u $(whoami)):$(id -g $(whoami))" -e MAX_CONCURRENT_THREAD_NUMBER=$(($(nproc) + 1)) --name geneerik-tianocore-builder geneerik/tianocore-sshd
 3) Create the user in the container and set a temporary password; the user will be forced to change this on first login; take note of the temporary password as it will be needed. Command: docker exec -e SSH_USERS="$(whoami):$(id -u $(whoami)):$(id -g $(whoami))" geneerik-tianocore-builder /sbin/createsshuser.sh
 4) Login to the container with ssh and change the password; you will be logged out as soon as the password is changed.  this assumes the container is exposed via local host; if usingkubernetes or some other non-standard docker setup, this command will be different.  Command: ssh -P2222 localhost
